@@ -1,20 +1,31 @@
-import Link from 'next/link';
+'use client';
+
+import { motion } from 'motion/react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Product } from '@/types';
+import { Wallet, PiggyBank, Baby, TrendingUp, CreditCard, Store, Home, Sprout, Repeat, FileText, ArrowRight } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
-const iconMap: Record<string, string> = {
-  Wallet: '💰', PiggyBank: '🐷', Baby: '👶', TrendingUp: '📈',
-  CreditCard: '💳', Store: '🏪', Home: '🏠', Sprout: '🌱', Repeat: '🔄',
+interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  shortDescription: string;
+  iconName: string;
+  referenceRate: number;
+  isFeatured: boolean;
+  ctaLabel: string;
+}
+
+const iconMap: Record<string, LucideIcon> = {
+  Wallet, PiggyBank, Baby, TrendingUp,
+  CreditCard, Store, Home, Sprout, Repeat,
 };
 
-function getIcon(value: string): string {
-  if (!value) return '📋';
-  // If it's already an emoji (not ASCII), return as-is
-  if (/\p{Emoji}/u.test(value) && !/^[a-zA-Z]+$/.test(value)) return value;
-  // Otherwise map from name
-  return iconMap[value] || '📋';
+function getIcon(value: string): LucideIcon {
+  if (!value) return FileText;
+  return iconMap[value] || FileText;
 }
 
 interface ProductCardProps {
@@ -23,41 +34,61 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, basePath }: ProductCardProps) {
+  const Icon = getIcon(product.iconName);
+
   return (
-    <Card className="group hover:shadow-lg transition-all hover:-translate-y-0.5 border-gray-100 h-full flex flex-col">
-      <CardHeader className="pb-3">
-        <div className="flex items-start justify-between">
-          <div className="w-12 h-12 rounded-xl bg-[#003848]/5 flex items-center justify-center text-[#003848] text-2xl mb-3">
-            {getIcon(product.iconName)}
+    <motion.div
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.2 }}
+    >
+      <Card className="group hover:shadow-2xl transition-all border border-gray-100 h-full flex flex-col relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-[#003848]/5 to-transparent rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+        <CardHeader className="pb-4 relative">
+          <div className="flex items-start justify-between mb-4">
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#003848]/10 to-[#003848]/5 flex items-center justify-center text-[#003848] transition-all group-hover:scale-110 group-hover:rotate-3">
+              <Icon className="w-7 h-7" strokeWidth={2.5} />
+            </div>
+            {product.isFeatured && (
+              <Badge className="bg-gradient-to-r from-[#ca9f43] to-[#d4af69] text-white border-0 shadow-lg">
+                ⭐ Destacado
+              </Badge>
+            )}
           </div>
-          {product.isFeatured && (
-            <Badge className="bg-[#ca9f43]/15 text-[#003848] hover:bg-[#ca9f43]/20">
-              Destacado
-            </Badge>
+          <CardTitle className="text-xl text-gray-900 group-hover:text-[#003848] transition-colors leading-tight">
+            {product.name}
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex-1 relative">
+          <p className="text-sm text-gray-600 leading-relaxed mb-4">
+            {product.shortDescription}
+          </p>
+          {product.referenceRate > 0 && (
+            <div className="mt-auto p-4 bg-gradient-to-br from-[#003848]/8 to-[#003848]/5 rounded-xl border border-[#003848]/10">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                Tasa referencial
+              </p>
+              <p className="text-2xl font-bold text-[#003848]">
+                {product.referenceRate}%{' '}
+                <span className="text-sm font-normal text-gray-500">anual</span>
+              </p>
+            </div>
           )}
-        </div>
-        <CardTitle className="text-lg text-gray-900">{product.name}</CardTitle>
-      </CardHeader>
-      <CardContent className="flex-1">
-        <p className="text-sm text-gray-600 leading-relaxed">
-          {product.shortDescription}
-        </p>
-        {product.referenceRate > 0 && (
-          <div className="mt-4 p-3 bg-[#003848]/5 rounded-lg">
-            <p className="text-xs text-gray-500">Tasa referencial</p>
-            <p className="text-xl font-bold text-[#003848]">
-              {product.referenceRate}% <span className="text-xs font-normal text-gray-500">anual</span>
-            </p>
-          </div>
-        )}
-      </CardContent>
-      <CardFooter>
-        <Button asChild className="w-full bg-[#003848] hover:bg-[#002a36]">
-          <Link href={`${basePath}/${product.slug}`}>
-            {product.ctaLabel || 'Ver detalles'}
-          </Link>
-        </Button>
-      </CardFooter>
-    </Card>
+        </CardContent>
+
+        <CardFooter className="relative">
+          <Button
+            asChild
+            className="w-full bg-[#003848] hover:bg-[#002a36] h-12 text-base font-semibold shadow-lg hover:shadow-xl transition-all group/btn"
+          >
+            <a href={`${basePath}/${product.slug}`} className="gap-2 flex items-center justify-center">
+              {product.ctaLabel || 'Ver detalles'}
+              <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+            </a>
+          </Button>
+        </CardFooter>
+      </Card>
+    </motion.div>
   );
 }

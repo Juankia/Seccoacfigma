@@ -1,4 +1,4 @@
-import { Hero } from '@/components/home/Hero';
+import { HeroWrapper } from '@/components/home/HeroWrapper';
 import { QuickAccess } from '@/components/home/QuickAccess';
 import { FeaturedProducts } from '@/components/home/FeaturedProducts';
 import { Benefits } from '@/components/home/Benefits';
@@ -9,7 +9,7 @@ export const revalidate = 60;
 export default function HomePage() {
   return (
     <>
-      <Hero />
+      <HeroWrapper />
       <QuickAccess />
       <FeaturedProducts />
       <Benefits />
